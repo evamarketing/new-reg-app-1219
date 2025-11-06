@@ -62,12 +62,13 @@ export const SupportMessages = ({ onCountChange }: SupportMessagesProps) => {
   };
 
   const handleWhatsAppChat = async (id: string, contactNumber: string) => {
-    const message = `*നിങ്ങളുടെ പേര്,*
-*മൊബൈൽ നമ്പർ,*
-*പഞ്ചായത്ത്,*
-*വാർഡ്,*
-*വയസ്സ്,*
-*എന്നിവ അയക്കുക,* പിന്നീട് നിങ്ങളുടെ പഞ്ചായത്തിന്റെ ചുമതലയുള്ള ആൾ നിങ്ങളുമായി ബന്ധപ്പെടും, നന്ദി... 🙏`;
+    const message = `ഈ സന്ദേശം ഇ- ലൈഫ് സൊസൈറ്റി സ്വയംതൊഴിൽ പദ്ധതിയുടെ ഭാഗമായി തങ്ങൾ സഹായം ആവശ്യപ്പെട്ടത് കൊണ്ടാണ്...
+നിങ്ങളുടെ പേര്,
+മൊബൈൽ നമ്പർ,
+പഞ്ചായത്ത്,
+വാർഡ്,
+വയസ്സ്,
+എന്നിവ അയക്കുക (ശബ്ദ സന്ദേശം അയച്ചാലും മതിയാകും  ), പിന്നീട് നിങ്ങളുടെ പഞ്ചായത്തിന്റെ ചുമതലയുള്ള ആൾ നിങ്ങളുമായി ബന്ധപ്പെടും, നന്ദി... 🙏`;
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/91${contactNumber}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
