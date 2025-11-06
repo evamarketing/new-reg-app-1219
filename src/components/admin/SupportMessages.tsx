@@ -13,9 +13,14 @@ interface SupportMessage {
   status: string;
   created_at: string;
   resolved_at: string | null;
+  whatsapp_sent_at: string | null;
 }
 
-export const SupportMessages = () => {
+interface SupportMessagesProps {
+  onCountChange?: () => void;
+}
+
+export const SupportMessages = ({ onCountChange }: SupportMessagesProps) => {
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,6 +33,7 @@ export const SupportMessages = () => {
 
       if (error) throw error;
       setMessages((data as any) || []);
+      onCountChange?.();
     } catch (error) {
       console.error("Error fetching support messages:", error);
       toast.error("Failed to load support messages");
@@ -55,7 +61,7 @@ export const SupportMessages = () => {
     }
   };
 
-  const handleWhatsAppChat = (contactNumber: string) => {
+  const handleWhatsAppChat = async (id: string, contactNumber: string) => {
     const message = `*നിങ്ങളുടെ പേര്,*
 *മൊബൈൽ നമ്പർ,*
 *പഞ്ചായത്ത്,*
@@ -65,6 +71,18 @@ export const SupportMessages = () => {
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/91${contactNumber}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
+    
+    try {
+      const { error } = await supabase
+        .from("support_messages" as any)
+        .update({ whatsapp_sent_at: new Date().toISOString() } as any)
+        .eq("id", id);
+
+      if (error) throw error;
+      fetchMessages();
+    } catch (error) {
+      console.error("Error updating WhatsApp sent status:", error);
+    }
   };
 
   useEffect(() => {
@@ -128,10 +146,11 @@ export const SupportMessages = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleWhatsAppChat(msg.contact_number)}
+                      onClick={() => handleWhatsAppChat(msg.id, msg.contact_number)}
+                      disabled={!!msg.whatsapp_sent_at}
                     >
                       <MessageCircle className="w-4 h-4 mr-1" />
-                      WhatsApp
+                      {msg.whatsapp_sent_at ? 'Sent' : 'WhatsApp'}
                     </Button>
                     {msg.status === "pending" && (
                       <Button

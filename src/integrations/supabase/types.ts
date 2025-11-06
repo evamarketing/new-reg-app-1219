@@ -200,6 +200,47 @@ export type Database = {
           },
         ]
       }
+      support_messages: {
+        Row: {
+          contact_number: string
+          created_at: string
+          id: string
+          message: string
+          panchayath_id: string | null
+          resolved_at: string | null
+          status: string | null
+          whatsapp_sent_at: string | null
+        }
+        Insert: {
+          contact_number: string
+          created_at?: string
+          id?: string
+          message: string
+          panchayath_id?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          whatsapp_sent_at?: string | null
+        }
+        Update: {
+          contact_number?: string
+          created_at?: string
+          id?: string
+          message?: string
+          panchayath_id?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          whatsapp_sent_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_panchayath_id_fkey"
+            columns: ["panchayath_id"]
+            isOneToOne: false
+            referencedRelation: "panchayaths"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       survey_responses: {
         Row: {
           age: number

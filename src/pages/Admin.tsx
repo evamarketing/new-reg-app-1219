@@ -16,10 +16,25 @@ const Admin = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [pendingSupportCount, setPendingSupportCount] = useState(0);
 
   useEffect(() => {
     checkAuth();
+    fetchPendingSupportCount();
   }, []);
+
+  const fetchPendingSupportCount = async () => {
+    try {
+      const { count } = await supabase
+        .from("support_messages" as any)
+        .select("*", { count: 'exact', head: true })
+        .eq("status", "pending");
+      
+      setPendingSupportCount(count || 0);
+    } catch (error) {
+      console.error("Error fetching pending support count:", error);
+    }
+  };
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -76,7 +91,14 @@ const Admin = () => {
             <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full gap-1 p-1" style={{ gridTemplateColumns: `repeat(${isSuperAdmin ? 7 : 6}, minmax(0, 1fr))` }}>
               <TabsTrigger value="responses" className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-3">Responses</TabsTrigger>
               <TabsTrigger value="leads" className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-3">Leads</TabsTrigger>
-              <TabsTrigger value="support" className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-3">Support</TabsTrigger>
+              <TabsTrigger value="support" className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-3">
+                Support
+                {pendingSupportCount > 0 && (
+                  <span className="ml-1 sm:ml-2 bg-destructive text-destructive-foreground rounded-full px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-semibold">
+                    {pendingSupportCount}
+                  </span>
+                )}
+              </TabsTrigger>
               <TabsTrigger value="panchayaths" className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-3">Panchayaths</TabsTrigger>
               <TabsTrigger value="categories" className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-3">Categories</TabsTrigger>
               <TabsTrigger value="programs" className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-3">Programs</TabsTrigger>
@@ -95,7 +117,7 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="support">
-            <SupportMessages />
+            <SupportMessages onCountChange={fetchPendingSupportCount} />
           </TabsContent>
 
           <TabsContent value="panchayaths">
